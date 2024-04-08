@@ -13,11 +13,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.FileProvider
-import com.example.yossibot.databinding.ActivityMainBinding
-import com.google.android.material.snackbar.Snackbar
-import java.io.File
-import java.io.FileOutputStream
+import com.example.yossibot.files.FilesHelper
 
 const val FILE_NAME = "yossiTemp.txt"
 const val STORAGE_PERMISSION_CODE = 23
@@ -45,8 +41,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-    private lateinit var binding : ActivityMainBinding
-
     // region Lifecycle
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,20 +50,12 @@ class MainActivity : AppCompatActivity() {
             requestForStoragePermissions()
         }
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setContentView(R.layout.activity_main)
 
-        binding.sendBtn.setOnClickListener {
-            Snackbar.make(it, "Message is sending - ${binding.userInputEt.text.toString()}",
-                Snackbar.LENGTH_SHORT)
-                    .show()
-            intentSendFileTelegram(saveToFile(binding.userInputEt.text.toString()))
-
-//            intentMessageTelegram(binding.userInputEt.text.toString())
-//            intentMessageTelegram(binding.userInputEt.text.toString())
-
-            binding.userInputEt.setText("")
-        }
+        supportFragmentManager
+            .beginTransaction()
+            .add(R.id.main_content, SendFragment())
+            .commit()
     }
 
     override fun onRequestPermissionsResult(
@@ -105,51 +91,6 @@ class MainActivity : AppCompatActivity() {
     // region private methods
 
     /**
-     * Save file to
-     * @param data - data to be sent
-     */
-    private fun saveToFile(data: String) : File {
-        val folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-
-        val file = File(folder, FILE_NAME)
-
-        lateinit var fileOutputStream: FileOutputStream
-
-        try {
-            fileOutputStream = FileOutputStream(file)
-            fileOutputStream.write(data.toByteArray())
-            fileOutputStream.close()
-        }
-        catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-        return file
-    }
-
-    /**
-     * Get External uti for a file
-     * @param file - the file
-     */
-    private fun getUri(file: File) : Uri {
-        return FileProvider.getUriForFile(this, "com.example.yossibot.provider", file)
-    }
-
-    /**
-     * Intent to send a telegram message
-     * @param msg
-     */
-    private fun intentMessageTelegram(msg: String?) {
-        val appName = "org.telegram.messenger"
-        val myIntent = Intent(Intent.ACTION_SEND)
-        myIntent.type = "text/plain"
-        myIntent.setPackage(appName)
-        myIntent.putExtra(Intent.EXTRA_TEXT, msg)
-        this.startActivity(Intent.createChooser(myIntent, "Share with"))
-
-    }
-
-    /**
      * Request storage permissions
      */
     private fun requestForStoragePermissions() {
@@ -176,18 +117,6 @@ class MainActivity : AppCompatActivity() {
                 STORAGE_PERMISSION_CODE
             )
         }
-    }
-
-    /**
-     * Send file to telegram via intent
-     */
-    private fun intentSendFileTelegram(file: File) {
-        val appName = "org.telegram.messenger"
-        val myIntent = Intent(Intent.ACTION_SEND)
-        myIntent.type = "text/*"
-        myIntent.setPackage(appName)
-        myIntent.putExtra(Intent.EXTRA_STREAM, getUri(file))
-        this.startActivity(myIntent)
     }
 
     // endregion

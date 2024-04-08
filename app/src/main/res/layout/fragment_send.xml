@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".SendFragment">
+
+    <EditText
+        android:id="@+id/recipients_et"
+        android:layout_width="@dimen/et_width"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:hint="recipients"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/title_et"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="@dimen/margin_top"/>
+
+    <EditText
+        android:id="@+id/title_et"
+        android:layout_width="@dimen/et_width"
+        android:inputType="text"
+        android:hint="Title"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/recipients_et"
+        app:layout_constraintBottom_toTopOf="@id/data_et"
+        android:layout_marginTop="@dimen/margin_top"/>
+
+
+    <EditText
+        android:id="@+id/data_et"
+        android:layout_width="@dimen/et_width"
+        android:inputType="text"
+        android:hint="Message"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title_et"
+        app:layout_constraintBottom_toTopOf="@id/send_btn"
+        android:layout_marginTop="@dimen/margin_top"/>
+
+    <Button
+        android:id="@+id/send_btn"
+        android:text="Send"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/data_et"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="@dimen/margin_top"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
