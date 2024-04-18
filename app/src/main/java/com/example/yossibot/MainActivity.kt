@@ -11,14 +11,25 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.example.yossibot.databinding.ActivityMainBinding
 import com.example.yossibot.files.FilesHelper
+import com.example.yossibot.settings.model.Recipient
+import com.example.yossibot.settings.viewmodel.RecipientsViewModel
+import com.example.yossibot.settings.viewmodel.RecipientsViewModelFactory
 
 const val FILE_NAME = "yossiTemp.txt"
 const val STORAGE_PERMISSION_CODE = 23
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
+
+    private val recipientsViewModel: RecipientsViewModel by viewModels {
+        RecipientsViewModelFactory((application as Application).repository)
+    }
 
     private val storageActivityResultLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(
@@ -50,7 +61,24 @@ class MainActivity : AppCompatActivity() {
             requestForStoragePermissions()
         }
 
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+
+        setContentView(binding.root)
+
+        recipientsViewModel.insert(Recipient(0,1,"first"))
+//
+//        val composeView = view.findViewById<ComposeView>(R.id.compose_view)
+//        composeView.apply {
+//            // Dispose of the Composition when the view's LifecycleOwner
+//            // is destroyed
+//            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+//            setContent {
+//                // In Compose world
+//                MaterialTheme {
+//                    Text("Hello Compose!")
+//                }
+//            }
+//        }
 
         supportFragmentManager
             .beginTransaction()

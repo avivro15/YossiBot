@@ -3,15 +3,13 @@ package com.example.yossibot
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
-import com.example.yossibot.data.SendData
 import com.example.yossibot.databinding.FragmentSendBinding
-import com.example.yossibot.files.FilesHelper
+import com.example.yossibot.settings.viewmodel.RecipientsViewModel
 import java.io.File
 
 class SendFragment : Fragment() {
@@ -19,6 +17,7 @@ class SendFragment : Fragment() {
     // region Members
 
     private lateinit var binding: FragmentSendBinding
+    private lateinit var viewModel: RecipientsViewModel
 
     // endregion
 
@@ -27,22 +26,21 @@ class SendFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentSendBinding.inflate(layoutInflater)
 
-        binding.sendBtn.setOnClickListener {
-            Log.d("asdf","btnclick")
-            val sendData = SendData(
-                mutableListOf(binding.recipientsEt.text.toString()),
-                binding.titleEt.text.toString(),
-                binding.dataEt.text.toString())
+//        binding.sendBtn.setOnClickListener {
+//            Log.d("asdf","btnclick")
+//            val sendData = SendData(
+//                mutableListOf(binding.recipientsEt.text.toString()),
+//                binding.titleEt.text.toString(),
+//                binding.dataEt.text.toString())
+//
+//            intentSendFileTelegram(FilesHelper.saveToFile(sendData))
+//
+//            resetViews()
+//        }
 
-            intentSendFileTelegram(FilesHelper.saveToFile(sendData))
-
-            resetViews()
-        }
-
-        // Inflate the layout for this fragment
         return binding.root
     }
 
