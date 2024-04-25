@@ -1,15 +1,18 @@
-package com.example.yossibot.settings.model
+package com.example.yossibot.recipients
 
 import androidx.annotation.WorkerThread
-import com.example.yossibot.RecipientsDao
-import kotlinx.coroutines.flow.Flow
 
 class RecipientsRepo(private val recipientsDao: RecipientsDao) {
 
-    val allRecipients: Flow<List<Recipient>> = recipientsDao.getAll()
+    fun getRecipients() = recipientsDao.getAll()
 
     @WorkerThread
     suspend fun insertRecipient(recipient: Recipient) {
         recipientsDao.createRecipient(recipient)
+    }
+
+    @WorkerThread
+    suspend fun deleteRecipient(recipient: Recipient) {
+        recipientsDao.deleteRecipient(recipient)
     }
 }

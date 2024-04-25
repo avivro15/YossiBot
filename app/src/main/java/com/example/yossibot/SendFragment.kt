@@ -9,15 +9,14 @@ import android.view.ViewGroup
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import com.example.yossibot.databinding.FragmentSendBinding
-import com.example.yossibot.settings.viewmodel.RecipientsViewModel
 import java.io.File
 
+// TODO remove
 class SendFragment : Fragment() {
 
     // region Members
 
     private lateinit var binding: FragmentSendBinding
-    private lateinit var viewModel: RecipientsViewModel
 
     // endregion
 
@@ -80,15 +79,6 @@ class SendFragment : Fragment() {
         myIntent.setPackage(appName)
         myIntent.putExtra(Intent.EXTRA_STREAM, getUri(file))
         this.startActivity(myIntent)
-    }
-
-    /**
-     * Empty all views
-     */
-    private fun resetViews() {
-        binding.titleEt.text.clear()
-        binding.dataEt.text.clear()
-        binding.recipientsEt.text.clear()
     }
 
     // endregion

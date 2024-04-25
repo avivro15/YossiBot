@@ -4,7 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.yossibot.settings.model.Recipient
+import com.example.yossibot.recipients.Recipient
+import com.example.yossibot.recipients.RecipientsDao
 
 
 @Database(entities = [Recipient::class], version = 1)

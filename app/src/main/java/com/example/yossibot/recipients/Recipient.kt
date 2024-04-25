@@ -1,11 +1,12 @@
-package com.example.yossibot.settings.model
+package com.example.yossibot.recipients
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.gson.annotations.Expose
 
 @Entity(tableName = "recipients_table")
 data class Recipient(
     @PrimaryKey(autoGenerate = true) val id: Int,
-    val recipientsId: Int,
-    val firstName: String
+    @Expose val recipientsId: Int,
+    @Expose val name: String
 )
