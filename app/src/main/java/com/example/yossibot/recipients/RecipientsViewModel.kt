@@ -128,5 +128,6 @@ sealed class Resource {
         val recipient: UiRecipient? = null,
         val isVisible: Boolean = true
     ) : Resource()
+
     data class Success(val data: String) : Resource()
 }

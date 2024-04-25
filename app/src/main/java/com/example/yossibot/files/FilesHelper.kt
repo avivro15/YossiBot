@@ -11,6 +11,10 @@ import com.example.yossibot.data.SendData
 import com.google.gson.GsonBuilder
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
+import java.util.UUID
+
+const val TEMP_FOLDER_NAME = "tempYossi"
 
 object FilesHelper {
 
@@ -32,9 +36,38 @@ object FilesHelper {
         }
     }
 
+    fun clearTempFolder() {
+        for (file in getTempFolder().listFiles()!!) {
+            file.delete()
+        }
+    }
+
+    /**
+     * Create temp folder if not exists
+     * @return the Temp folder
+     */
+    private fun getTempFolder() : File {
+        // Create the "temp" folder within Documents
+        val tempFolder = File(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
+            TEMP_FOLDER_NAME
+        )
+
+        // Check if the folder already exists
+        if (!tempFolder.exists()) {
+            try {
+                tempFolder.mkdirs()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+
+        return tempFolder
+    }
+
     fun saveToFile(sendData: SendData) : File {
-        val folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-        val file = File(folder, FILE_NAME)
+        val folder = getTempFolder()
+        val file = File(folder, UUID.randomUUID().toString() + FILE_NAME)
 
         lateinit var fileOutputStream: FileOutputStream
 
