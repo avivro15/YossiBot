@@ -9,10 +9,11 @@ import android.os.Environment
 import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,11 +25,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
-import com.example.yossibot.databinding.ActivityMainBinding
 import com.example.yossibot.files.FilesHelper
 import com.example.yossibot.recipients.RecipientsViewModel
 import com.example.yossibot.recipients.RecipientsViewModelFactory
@@ -42,9 +41,7 @@ import java.io.File
 const val FILE_NAME = "yossiTemp.txt"
 const val STORAGE_PERMISSION_CODE = 23
 
-class MainActivity : AppCompatActivity() {
-
-    private lateinit var binding: ActivityMainBinding
+class MainActivity : ComponentActivity() {
 
     private val recipientsViewModel: RecipientsViewModel by viewModels {
         RecipientsViewModelFactory((application as Application).repository)
@@ -75,87 +72,68 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        recipientsViewModel.insert(Recipient(0,12,"name"))
-
 
         if (!FilesHelper.checkStoragePermissions(this)) {
             requestForStoragePermissions()
         }
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContent {
+            val recipients = recipientsViewModel.uiRecipientsList
+            val event = rememberSaveable {
+                mutableStateOf<Resource?>(null)
+            }
 
-        setContentView(binding.root)
-
-        val composeView = binding.composeView
-        composeView.apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                val recipients = recipientsViewModel.uiRecipientsList
-                val event = rememberSaveable {
-                    mutableStateOf<Resource?>(null)
-                }
-
-                LaunchedEffect(key1 = Unit) {
-                    lifecycleScope.launch {
-                        recipientsViewModel.uiState.eventChannel.collect { receivedEvent ->
-                            event.value = receivedEvent
-                        }
+            LaunchedEffect(key1 = Unit) {
+                lifecycleScope.launch {
+                    recipientsViewModel.uiState.eventChannel.collect { receivedEvent ->
+                        event.value = receivedEvent
                     }
                 }
+            }
 
-                Surface {
-                    if (event.value != null) {
-                        when(event.value) {
-                            is Resource.RecipientDialogEvent -> {
-                                val dialogEvent = event.value as Resource.RecipientDialogEvent
-                                if (dialogEvent.isVisible && dialogEvent.recipient != null) {
-                                    RecipientDialog(
-                                        recipient = dialogEvent.recipient,
-                                        onConfirm = {recipientsViewModel.saveRecipient(it)},
-                                        onDismiss = {recipientsViewModel.dismissRecipientDialog()},
-                                        onDelete = {recipientsViewModel.deleteRecipient(it)}
-                                    )
-                                }
+            Surface {
+                if (event.value != null) {
+                    when (event.value) {
+                        is Resource.RecipientDialogEvent -> {
+                            val dialogEvent = event.value as Resource.RecipientDialogEvent
+                            if (dialogEvent.isVisible && dialogEvent.recipient != null) {
+                                RecipientDialog(
+                                    recipient = dialogEvent.recipient,
+                                    onConfirm = { recipientsViewModel.saveRecipient(it) },
+                                    onDismiss = { recipientsViewModel.dismissRecipientDialog() },
+                                    onDelete = { recipientsViewModel.deleteRecipient(it) }
+                                )
                             }
-
-                            is Resource.Success -> TODO()
-                            null -> TODO()
                         }
-                    }
-                    Column(modifier = Modifier.fillMaxSize(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Top) {
-                        RecipientsList(recipients = recipients,
-                            onCheckChangeListener = {isChecked, recipient ->
-                                recipientsViewModel.onCheckedChange(isChecked, recipient)},
-                            openDialogListener = {recipient ->
-                                recipientsViewModel.showRecipientDialog(recipient)})
 
-                        Form(viewmodel = recipientsViewModel)
-                        
-                        Button(content = { Text(text = "Send To Bot")} ,onClick = {
-                            intentSendFileTelegram(FilesHelper.saveToFile(recipientsViewModel.getCurrSendData()))
-                        })
+                        is Resource.Success -> TODO()
+                        null -> TODO()
                     }
+                }
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Top
+                ) {
+                    RecipientsList(recipients = recipients,
+                        onCheckChangeListener = { isChecked, recipient ->
+                            recipientsViewModel.onCheckedChange(isChecked, recipient)
+                        },
+                        openDialogListener = { recipient ->
+                            recipientsViewModel.showRecipientDialog(recipient)
+                        })
+
+                    Form(viewmodel = recipientsViewModel)
+
+                    Button(content = { Text(text = "Send To Bot") }, onClick = {
+                        intentSendFileTelegram(FilesHelper.saveToFile(recipientsViewModel.getCurrSendData()))
+                    })
                 }
             }
         }
     }
 
-//    @SuppressLint("UnrememberedMutableState")
-//    @Preview
-//    @Composable
-//    fun RecipientsListPreview() {
-//        Surface {
-//            Column {
-//                RecipientsList(recipients = listOf(
-//                    UiRecipient(10, mutableIntStateOf(10), mutableStateOf("asdf")),
-//                    UiRecipient(10, mutableIntStateOf(10), mutableStateOf("asdf"))),
-//                    onCheckChangeListener = {a,b ->  Log.d("aaa", "pressed")}) }
-//            }
-//        }
-
-
+    @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -236,7 +214,6 @@ class MainActivity : AppCompatActivity() {
         myIntent.setPackage(appName)
         myIntent.putExtra(Intent.EXTRA_TEXT, msg)
         this.startActivity(Intent.createChooser(myIntent, "Share with"))
-
     }
 
     /**
