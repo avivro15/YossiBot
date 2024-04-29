@@ -1,30 +1,29 @@
 package com.example.yossibot.recipients
 
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.yossibot.data.SendData
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class RecipientsViewModel(private val repository: RecipientsRepo) : ViewModel() {
 
+
     private val eventChannel = Channel<Resource>()
 
-    val eventsFlow = eventChannel.receiveAsFlow()
+    private val title = mutableStateOf("")
 
-    var title by mutableStateOf("")
-        private set
+    private val data = mutableStateOf("")
 
-    var data by mutableStateOf("")
-        private set
+    val uiState = UiState(eventChannel = eventChannel.receiveAsFlow(), title, data)
 
     private val _uiRecipientsList = mutableStateListOf<UiRecipient>()
     val uiRecipientsList: List<UiRecipient>
@@ -50,11 +49,11 @@ class RecipientsViewModel(private val repository: RecipientsRepo) : ViewModel() 
     }
 
     fun updateTitle(updatedTitle: String) {
-        title = updatedTitle
+        title.value = updatedTitle
     }
 
     fun updateMsgData(updatedData: String) {
-        data = updatedData
+        data.value = updatedData
     }
 
     fun onCheckedChange(isChecked: Boolean, recipient: UiRecipient) {
@@ -104,7 +103,11 @@ class RecipientsViewModel(private val repository: RecipientsRepo) : ViewModel() 
                                                     uiRecipient.name.value))
         }
 
-        return SendData(recipients = sendRecipient, title, data)
+        return SendData(
+            recipients = sendRecipient,
+            title.value,
+            data.value
+        )
     }
 }
 
@@ -117,6 +120,12 @@ class RecipientsViewModelFactory(private val repository: RecipientsRepo) : ViewM
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
+
+data class UiState(
+    val eventChannel: Flow<Resource>,
+    val title: State<String>,
+    val data: State<String>
+)
 
 data class UiRecipient(val id: Int = 0,
                        val recipientId: MutableState<Int> = mutableIntStateOf(0),

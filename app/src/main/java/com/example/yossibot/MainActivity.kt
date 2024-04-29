@@ -88,8 +88,6 @@ class MainActivity : AppCompatActivity() {
 
         val composeView = binding.composeView
         composeView.apply {
-            // Dispose of the Composition when the view's LifecycleOwner
-            // is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 val recipients = recipientsViewModel.uiRecipientsList
@@ -99,9 +97,8 @@ class MainActivity : AppCompatActivity() {
 
                 LaunchedEffect(key1 = Unit) {
                     lifecycleScope.launch {
-                        recipientsViewModel.eventsFlow.collect { receivedEvent ->
+                        recipientsViewModel.uiState.eventChannel.collect { receivedEvent ->
                             event.value = receivedEvent
-
                         }
                     }
                 }

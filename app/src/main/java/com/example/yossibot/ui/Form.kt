@@ -19,14 +19,14 @@ fun Form(viewmodel: RecipientsViewModel) {
     Column(modifier = Modifier.fillMaxWidth()
         .padding(3.dp)) {
         Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
-            OutlinedTextField(value = viewmodel.title,
+            OutlinedTextField(value = viewmodel.uiState.title.value,
                 onValueChange = {title -> viewmodel.updateTitle(title)},
                 label = { Text(text = "Title") },
                 placeholder = { Text(text = "Mail Title") }
             )
         }
         Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
-            OutlinedTextField(value = viewmodel.data,
+            OutlinedTextField(value = viewmodel.uiState.data.value,
                 onValueChange = {data -> viewmodel.updateMsgData(data)},
                 label = { Text(text = "Data") },
                 placeholder = { Text(text = "Mail Data") })

@@ -16,7 +16,7 @@ interface RecipientsDao {
     @Delete
     suspend fun deleteRecipient(recipient: Recipient)
 
-    @Query("SELECT * FROM recipients_table")
+    @Query("SELECT * FROM recipients_table ORDER BY name ASC")
     fun getAll(): Flow<List<Recipient>>
 
 }
