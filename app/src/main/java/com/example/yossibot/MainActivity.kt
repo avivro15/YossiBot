@@ -38,7 +38,6 @@ import com.example.yossibot.ui.RecipientsList
 import kotlinx.coroutines.launch
 import java.io.File
 
-const val FILE_NAME = "yossiTemp.txt"
 const val STORAGE_PERMISSION_CODE = 23
 
 class MainActivity : ComponentActivity() {

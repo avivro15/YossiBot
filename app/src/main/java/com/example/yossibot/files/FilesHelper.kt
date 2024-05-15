@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Environment
 import androidx.core.content.ContextCompat
-import com.example.yossibot.FILE_NAME
 import com.example.yossibot.data.SendData
 import com.google.gson.GsonBuilder
 import java.io.File
@@ -14,7 +13,9 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.util.UUID
 
+const val TXT_FILE_EXTENT = ".txt"
 const val TEMP_FOLDER_NAME = "tempYossi"
+const val FILE_NAME = "yossiTemp-"
 
 object FilesHelper {
 
@@ -67,13 +68,15 @@ object FilesHelper {
 
     fun saveToFile(sendData: SendData) : File {
         val folder = getTempFolder()
-        val file = File(folder, UUID.randomUUID().toString() + FILE_NAME)
+        val file = File(folder, FILE_NAME + UUID.randomUUID().toString() + TXT_FILE_EXTENT)
 
         lateinit var fileOutputStream: FileOutputStream
 
         try {
             fileOutputStream = FileOutputStream(file)
-            fileOutputStream.write(GsonBuilder().create().toJson(sendData).toByteArray())
+            fileOutputStream.write(
+                GsonBuilder().create().toJson(sendData)
+                    .toByteArray())
             fileOutputStream.close()
         }
         catch (e: Exception) {

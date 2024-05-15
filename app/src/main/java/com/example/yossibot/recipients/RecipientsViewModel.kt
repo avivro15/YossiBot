@@ -98,9 +98,9 @@ class RecipientsViewModel(private val repository: RecipientsRepo) : ViewModel() 
         _uiRecipientsList.forEach {
             uiRecipient ->
                 if (uiRecipient.isChecked.value)
-                    sendRecipient.add(Recipient(uiRecipient.id,
+                    sendRecipient.add(Recipient(0,
                                                     uiRecipient.recipientId.value,
-                                                    uiRecipient.name.value))
+                                                    ""))
         }
 
         return SendData(
